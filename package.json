@@ -1,6 +1,6 @@
 {
-  "name": "cloudworker-proxy",
-  "version": "1.16.1",
+  "name": "edge-proxy",
+  "version": "0.0.3",
   "description": "An api gateway for cloudflare workers",
   "main": "src/index.js",
   "scripts": {
