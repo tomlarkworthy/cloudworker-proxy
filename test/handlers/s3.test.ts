@@ -1,8 +1,8 @@
-const { expect } = require('chai');
-const s3Factory = require('../../src/handlers/s3');
-const helpers = require('../helpers');
+import { expect } from 'chai';
+import s3Factory from '../../src/handlers/s3';
+import helpers from '../helpers';
 
-const fetchMock = require('fetch-mock');
+import fetchMock from 'fetch-mock';
 Object.assign(fetchMock.config, { Headers, Request, Response, fetch });
 
 describe('s3', () => {
@@ -23,7 +23,7 @@ describe('s3', () => {
     ctx.params = {
       file: 'doesnoteexist',
     };
-    await s3(ctx, []);
+    await s3(ctx);
     expect(ctx.status).to.equal(403);
   });
 
@@ -43,7 +43,42 @@ describe('s3', () => {
     ctx.params = {
       file: 'doesnoteexist',
     };
-    await s3(ctx, []);
+    await s3(ctx);
+    expect(ctx.status).to.equal(200);
+  });
+
+  it('List bucket without enableBucketOperations should 404', async () => {
+    const s3 = s3Factory({
+      endpoint: 'http://localhost:9000',
+      forcePathStyle: true,
+      bucket: 'myBucket',
+      accessKeyId: 'DERP',
+      secretAccessKey: 'DERP',
+    });
+
+    const ctx = helpers.getCtx();
+    ctx.params = {};
+    await s3(ctx);
+    expect(ctx.status).to.equal(404);
+  });
+
+  it('List bucket with enableBucketOperations should forward to bucket URL', async () => {
+    fetchMock.mock(`http://localhost:9000/myBucket`, {
+      status: 200,
+    });
+
+    const s3 = s3Factory({
+      endpoint: 'http://localhost:9000',
+      forcePathStyle: true,
+      bucket: 'myBucket',
+      accessKeyId: 'DERP',
+      secretAccessKey: 'DERP',
+      enableBucketOperations: true,
+    });
+
+    const ctx = helpers.getCtx();
+    ctx.params = {};
+    await s3(ctx);
     expect(ctx.status).to.equal(200);
   });
 });
