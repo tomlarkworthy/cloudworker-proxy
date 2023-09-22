@@ -1,6 +1,6 @@
 {
   "name": "edge-proxy",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "An api gateway for cloudflare workers",
   "license": "MIT",
   "repository": {
